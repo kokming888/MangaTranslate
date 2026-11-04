@@ -16,7 +16,10 @@ Extracts text from images on web pages (manga panels, signs, etc.) and overlays 
 - Tesseract.js v5 loaded (included as `lib/tesseract.min.js`)
 
 ## Quick Install
-1. Load `MangaTranslate` as an unpacked extension in Firefox (Chrome and Edge support at later time)
+For the standalone Chrome/Edge Manifest V3 version, load the [mv3 directory](./mv3/README.md).
+The instructions below apply to the original Firefox/MV2 version.
+
+1. Load `MangaTranslate` as an unpacked extension in Firefox
 2. Click the extension icon → ⚙ Settings → configure API URL and OCR language
 3. Navigate to a page with text images
 4. Click "Translate Detected Text"

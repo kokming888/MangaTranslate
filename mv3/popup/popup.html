@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Manga Text Overlay</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      width: 340px;
+      padding: 16px;
+      font-family: "Segoe UI", system-ui, sans-serif;
+      font-size: 13px;
+      color: #1a1a1a;
+      background: #fafafa;
+    }
+    h2 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    h2 .icon { font-size: 18px; }
+
+    /* Sections */
+    .section {
+      margin-bottom: 14px;
+    }
+    .section-title {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #888;
+      margin-bottom: 6px;
+    }
+
+    /* Buttons */
+    .btn {
+      width: 100%;
+      padding: 10px 14px;
+      border: none;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s, opacity 0.15s;
+    }
+    .btn-primary {
+      background: #2b6cb0;
+      color: #fff;
+    }
+    .btn-primary:hover { background: #245a94; }
+    .btn-primary:disabled {
+      background: #a0c4e0;
+      cursor: not-allowed;
+    }
+    .btn-secondary {
+      background: #e8e8e8;
+      color: #333;
+      margin-top: 6px;
+    }
+    .btn-secondary:hover { background: #ddd; }
+
+    /* Config fields */
+    .config-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 5px;
+    }
+    .config-row label {
+      font-size: 12px;
+      min-width: 70px;
+      color: #555;
+    }
+    .config-row input,
+    .config-row select {
+      flex: 1;
+      padding: 5px 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 12px;
+      background: #fff;
+    }
+    .config-row input:focus,
+    .config-row select:focus {
+      outline: none;
+      border-color: #2b6cb0;
+    }
+
+    /* Status */
+    #status {
+      margin-top: 10px;
+      padding: 8px 10px;
+      border-radius: 5px;
+      font-size: 12px;
+      background: #f0f0f0;
+      color: #555;
+      line-height: 1.4;
+      min-height: 34px;
+      word-break: break-word;
+    }
+    #status.success { background: #e6f4ea; color: #1a7a3a; }
+    #status.error { background: #fde8e8; color: #c0392b; }
+    #status.progress { background: #e8f0fe; color: #1a5fb4; }
+
+    /* Progress bar */
+    .progress-bar {
+      width: 100%;
+      height: 3px;
+      background: #e0e0e0;
+      border-radius: 2px;
+      margin-top: 6px;
+      overflow: hidden;
+      display: none;
+    }
+    .progress-bar.active { display: block; }
+    .progress-bar .fill {
+      height: 100%;
+      background: #2b6cb0;
+      border-radius: 2px;
+      transition: width 0.3s ease;
+      width: 0%;
+    }
+
+    /* Collapse toggle */
+    .toggle-config {
+      font-size: 11px;
+      color: #2b6cb0;
+      cursor: pointer;
+      margin-bottom: 6px;
+      display: inline-block;
+      user-select: none;
+    }
+    .toggle-config:hover { text-decoration: underline; }
+    .config-panel { display: none; }
+    .config-panel.open { display: block; }
+  </style>
+</head>
+<body>
+  <h2><span class="icon">📷</span> Manga Text Overlay</h2>
+
+  <!-- Translation Button -->
+  <div class="section">
+    <button id="translateBtn" class="btn btn-primary">Translate Detected Text</button>
+    <button id="removeBtn" class="btn btn-secondary">Remove Overlays</button>
+    <div class="progress-bar" id="progressBar"><div class="fill" id="progressFill"></div></div>
+    <div id="status">Ready.</div>
+  </div>
+
+  <!-- Config -->
+  <div class="section">
+    <span class="toggle-config" id="toggleConfig">⚙ Settings</span>
+    <div class="config-panel" id="configPanel">
+      <div class="config-row">
+        <label>API URL</label>
+        <input type="text" id="configUrl" placeholder="http://127.0.0.1:5000">
+      </div>
+      <div class="config-row">
+        <label>OCR Lang</label>
+        <select id="configLang">
+          <option value="eng">English</option>
+          <option value="jpn">Japanese</option>
+          <option value="kor">Korean</option>
+          <option value="chi_sim">Chinese (Simplified)</option>
+          <option value="chi_tra">Chinese (Traditional)</option>
+          <option value="fra">French</option>
+          <option value="deu">German</option>
+          <option value="spa">Spanish</option>
+          <option value="rus">Russian</option>
+          <option value="por">Portuguese</option>
+          <option value="ita">Italian</option>
+          <option value="tha">Thai</option>
+          <option value="vie">Vietnamese</option>
+        </select>
+      </div>
+      <div class="config-row">
+        <label>Translate To</label>
+        <select id="configTargetLang">
+          <option value="en">English</option>
+          <option value="ja">Japanese</option>
+          <option value="ko">Korean</option>
+          <option value="zh">Chinese</option>
+          <option value="fr">French</option>
+          <option value="de">German</option>
+          <option value="es">Spanish</option>
+          <option value="ru">Russian</option>
+          <option value="pt">Portuguese</option>
+          <option value="it">Italian</option>
+          <option value="th">Thai</option>
+          <option value="vi">Vietnamese</option>
+          <option value="ar">Arabic</option>
+          <option value="hi">Hindi</option>
+          <option value="tr">Turkish</option>
+        </select>
+      </div>
+      <div class="config-row">
+        <label>Min Width</label>
+        <input type="number" id="configMinW" placeholder="150" min="50" max="2048">
+      </div>
+      <div class="config-row">
+        <label>Min Height</label>
+        <input type="number" id="configMinH" placeholder="100" min="50" max="2048">
+      </div>
+      <button id="saveConfigBtn" class="btn btn-secondary" style="margin-top:8px;">Save Settings</button>
+    </div>
+  </div>
+
+  <script src="../config.js"></script>
+  <script src="../popup.js"></script>
+</body>
+</html>
